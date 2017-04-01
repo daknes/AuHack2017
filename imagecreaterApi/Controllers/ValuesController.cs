@@ -119,7 +119,7 @@ namespace imagecreaterApi.Controllers
             for (int i = 0; i < memelines.Count; i++)
             {
                 GraphicsPath gp = new GraphicsPath();
-                Rectangle r = new Rectangle(75, 25 + (23 * i), bitmap.Width, bitmap.Height);
+                Rectangle r = new Rectangle(25, 25 + (23 * i), bitmap.Width, bitmap.Height);
                 //Rectangle r = new Rectangle(0, (43 * i), bitmap.Width, bitmap.Height);
 
                 gp.AddString(memelines[i], f.FontFamily, (int)f.Style, 20, r, stringformat);
