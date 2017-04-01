@@ -101,7 +101,7 @@ namespace imagecreaterApi.Controllers
             var memelines = DefindeNoOfLines(test);
 
             System.Drawing.Image bitmap = (System.Drawing.Image)Bitmap.FromStream(stream);
-            bitmap =  ScaleImage(bitmap, 460, 720);
+           // bitmap =  ScaleImage(bitmap, 460, 720);
             bitmap = RotateImage(bitmap, 90);
 
             Graphics graphicsImage = Graphics.FromImage(bitmap);
@@ -119,7 +119,7 @@ namespace imagecreaterApi.Controllers
             for (int i = 0; i < memelines.Count; i++)
             {
                 GraphicsPath gp = new GraphicsPath();
-                Rectangle r = new Rectangle(50, 25 + (20 * i), bitmap.Width, bitmap.Height);
+                Rectangle r = new Rectangle(75, 25 + (20 * i), bitmap.Width, bitmap.Height);
 
                 gp.AddString(memelines[i], f.FontFamily, (int)f.Style, 15, r, stringformat);
 
