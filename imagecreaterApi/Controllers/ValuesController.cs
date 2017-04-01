@@ -119,9 +119,9 @@ namespace imagecreaterApi.Controllers
             for (int i = 0; i < memelines.Count; i++)
             {
                 GraphicsPath gp = new GraphicsPath();
-                Rectangle r = new Rectangle(25, 50 + (20 * i), bitmap.Width, bitmap.Height);
+                Rectangle r = new Rectangle(50, 25 + (20 * i), bitmap.Width, bitmap.Height);
 
-                gp.AddString(memelines[i], f.FontFamily, (int)f.Style, 25, r, stringformat);
+                gp.AddString(memelines[i], f.FontFamily, (int)f.Style, 15, r, stringformat);
 
                 graphicsImage.SmoothingMode = SmoothingMode.AntiAlias;
                 graphicsImage.PixelOffsetMode = PixelOffsetMode.HighQuality;
