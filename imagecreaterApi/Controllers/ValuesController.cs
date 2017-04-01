@@ -101,12 +101,15 @@ namespace imagecreaterApi.Controllers
             var memelines = DefindeNoOfLines(test);
 
             System.Drawing.Image bitmap = (System.Drawing.Image)Bitmap.FromStream(stream);
+            bitmap = RotateImage(bitmap, 90);
+            bitmap =  ScaleImage(bitmap, 460, 720);
+
             Graphics graphicsImage = Graphics.FromImage(bitmap);
             StringFormat stringformat = new StringFormat();
             stringformat.Alignment = StringAlignment.Near;
             stringformat.LineAlignment = StringAlignment.Near;
             Color StringColor = System.Drawing.ColorTranslator.FromHtml("#ffffff");
-            Font f = new Font("Impact", 25, FontStyle.Bold, GraphicsUnit.Pixel);
+            Font f = new Font("Impact", 15, FontStyle.Bold, GraphicsUnit.Pixel);
             Pen p = new Pen(ColorTranslator.FromHtml("#000000"), 8);
             p.LineJoin = LineJoin.Round; //prevent "spikes" at the path
 
@@ -116,9 +119,9 @@ namespace imagecreaterApi.Controllers
             for (int i = 0; i < memelines.Count; i++)
             {
                 GraphicsPath gp = new GraphicsPath();
-                Rectangle r = new Rectangle(25, 50 + (30 * i), bitmap.Width, bitmap.Height);
+                Rectangle r = new Rectangle(25, 50 + (20 * i), bitmap.Width, bitmap.Height);
 
-                gp.AddString(memelines[i], f.FontFamily, (int)f.Style, 25, r, stringformat);
+                gp.AddString(memelines[i], f.FontFamily, (int)f.Style, 15, r, stringformat);
 
                 graphicsImage.SmoothingMode = SmoothingMode.AntiAlias;
                 graphicsImage.PixelOffsetMode = PixelOffsetMode.HighQuality;
@@ -140,6 +143,54 @@ namespace imagecreaterApi.Controllers
             return ms;
         }
 
+
+        private static Image ScaleImage(Image image, int maxWidth, int maxHeight)
+        {
+            var ratioX = (double)maxWidth / image.Width;
+            var ratioY = (double)maxHeight / image.Height;
+            var ratio = Math.Min(ratioX, ratioY);
+
+            var newWidth = (int)(image.Width * ratio);
+            var newHeight = (int)(image.Height * ratio);
+
+            var newImage = new Bitmap(newWidth, newHeight);
+
+            using (var graphics = Graphics.FromImage(newImage))
+                graphics.DrawImage(image, 0, 0, newWidth, newHeight);
+
+            return newImage;
+        }
+
+
+        public static Image RotateImage(Image img, float rotationAngle)
+        {
+            //create an empty Bitmap image
+            Bitmap bmp = new Bitmap(img.Width, img.Height);
+
+            //turn the Bitmap into a Graphics object
+            Graphics gfx = Graphics.FromImage(bmp);
+
+            //now we set the rotation point to the center of our image
+            gfx.TranslateTransform((float)bmp.Width / 2, (float)bmp.Height / 2);
+
+            //now rotate the image
+            gfx.RotateTransform(rotationAngle);
+
+            gfx.TranslateTransform(-(float)bmp.Width / 2, -(float)bmp.Height / 2);
+
+            //set the InterpolationMode to HighQualityBicubic so to ensure a high
+            //quality image once it is transformed to the specified size
+            gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
+
+            //now draw our new image onto the graphics object
+            gfx.DrawImage(img, new Point(0, 0));
+
+            //dispose of our Graphics object
+            gfx.Dispose();
+
+            //return the image
+            return bmp;
+        }
 
         private string saveToSThree(Stream image, string imageName)
         {
