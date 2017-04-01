@@ -109,7 +109,7 @@ namespace imagecreaterApi.Controllers
             stringformat.Alignment = StringAlignment.Near;
             stringformat.LineAlignment = StringAlignment.Near;
             Color StringColor = System.Drawing.ColorTranslator.FromHtml("#ffffff");
-            Font f = new Font("Impact", 100, FontStyle.Bold, GraphicsUnit.Pixel);
+            Font f = new Font("Impact", 20, FontStyle.Bold, GraphicsUnit.Pixel);
             Pen p = new Pen(ColorTranslator.FromHtml("#000000"), 8);
             p.LineJoin = LineJoin.Round; //prevent "spikes" at the path
 
@@ -119,10 +119,10 @@ namespace imagecreaterApi.Controllers
             for (int i = 0; i < memelines.Count; i++)
             {
                 GraphicsPath gp = new GraphicsPath();
-                Rectangle r = new Rectangle(75, 25 + (103 * i), bitmap.Width, bitmap.Height);
+                Rectangle r = new Rectangle(75, 25 + (23 * i), bitmap.Width, bitmap.Height);
                 //Rectangle r = new Rectangle(0, (43 * i), bitmap.Width, bitmap.Height);
 
-                gp.AddString(memelines[i], f.FontFamily, (int)f.Style, 100, r, stringformat);
+                gp.AddString(memelines[i], f.FontFamily, (int)f.Style, 20, r, stringformat);
 
                 graphicsImage.SmoothingMode = SmoothingMode.AntiAlias;
                 graphicsImage.PixelOffsetMode = PixelOffsetMode.HighQuality;
