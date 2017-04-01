@@ -1,1 +1,6 @@
 C:\Users\1034553\Desktop\auhack\imgaerender\imgaerender\bin\Debug\imgaerender.exe.config
+C:\Users\1034553\Desktop\auhack\imgaerender\imgaerender\obj\Debug\imgaerender.csprojResolveAssemblyReference.cache
+C:\Users\1034553\Desktop\auhack\imgaerender\imgaerender\bin\Debug\imgaerender.exe
+C:\Users\1034553\Desktop\auhack\imgaerender\imgaerender\bin\Debug\imgaerender.pdb
+C:\Users\1034553\Desktop\auhack\imgaerender\imgaerender\obj\Debug\imgaerender.exe
+C:\Users\1034553\Desktop\auhack\imgaerender\imgaerender\obj\Debug\imgaerender.pdb
