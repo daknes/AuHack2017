@@ -9,29 +9,38 @@ using System.Web.Http;
 using System.Web;
 using System.Threading.Tasks;
 using System.IO;
+using Amazon.S3;
+using Amazon;
+using Amazon.S3.Transfer;
+using System.Drawing.Imaging;
+using Amazon.S3.Model;
 
 namespace imagecreaterApi.Controllers
 {
     public class ValuesController : ApiController
-    {        
+    {
         public string Get()
-        {            
+        {
             return "https://s3.eu-central-1.amazonaws.com/auhackimages/17742444_10211086890479658_1867142806.jpg";
         }
 
         // POST api/values
-        public async Task Post([FromBody]string value)
+        public async Task<string> Post()
         {
+
             if (!Request.Content.IsMimeMultipartContent())
                 throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
-
+            var url = "";
             var provider = new MultipartMemoryStreamProvider();
             await Request.Content.ReadAsMultipartAsync(provider);
             foreach (var file in provider.Contents)
             {
-                var filename = file.Headers.ContentDisposition.FileName.Trim('\"');
-                var buffer = await file.ReadAsByteArrayAsync();                
+                var filename = Guid.NewGuid().ToString() +".png";
+                var stream = await file.ReadAsStreamAsync();
+                var newstream = GenerateImage(stream);
+                url = saveToSThree(newstream, filename);
             }
+            return url;
 
         }
 
@@ -83,17 +92,15 @@ namespace imagecreaterApi.Controllers
             return memlines;
         }
 
-        private void GenerateImage(byte[] image)
+        private Stream GenerateImage(Stream stream)
         {
             var firstlinememe = "When you send nudes to your online gf";
             var secoundlineMeme = "And your uncle phone rings";
             var test = firstlinememe + " " + secoundlineMeme + " " + secoundlineMeme;
 
-            MemoryStream ms = new MemoryStream(image);
-
             var memelines = DefindeNoOfLines(test);
 
-            System.Drawing.Image bitmap = (System.Drawing.Image)Bitmap.FromStream(ms);
+            System.Drawing.Image bitmap = (System.Drawing.Image)Bitmap.FromStream(stream);
             Graphics graphicsImage = Graphics.FromImage(bitmap);
             StringFormat stringformat = new StringFormat();
             stringformat.Alignment = StringAlignment.Near;
@@ -127,7 +134,28 @@ namespace imagecreaterApi.Controllers
             stringformat.Dispose();
             graphicsImage.Dispose();
 
-            bitmap.Save(@"C:\Users\1034553\Desktop\17742444_10211086890479658_1867142806.jpg");
+            var ms = new MemoryStream();
+            bitmap.Save(ms, ImageFormat.Png);
+            ms.Position = 0;
+            return ms;
+        }
+
+
+        private string saveToSThree(Stream image, string imageName)
+        {
+            //TransferUtility utility = new TransferUtility("", "");
+
+            IAmazonS3 client;
+            client = new AmazonS3Client(Amazon.RegionEndpoint.EUCentral1);
+            PutObjectRequest request = new PutObjectRequest()
+            {
+                BucketName = "auhackimages",
+                Key = imageName,
+                InputStream = image,
+                CannedACL = S3CannedACL.PublicReadWrite
+            };
+            PutObjectResponse response2 = client.PutObject(request);
+            return "https://s3.eu-central-1.amazonaws.com/auhackimages/" + imageName;
         }
 
     }
