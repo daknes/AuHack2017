@@ -102,7 +102,7 @@ namespace imagecreaterApi.Controllers
 
             System.Drawing.Image bitmap = (System.Drawing.Image)Bitmap.FromStream(stream);
            // bitmap =  ScaleImage(bitmap, 460, 720);
-            bitmap = RotateImage(bitmap, 90);
+           // bitmap = RotateImage(bitmap, 90);
 
             Graphics graphicsImage = Graphics.FromImage(bitmap);
             StringFormat stringformat = new StringFormat();
