@@ -114,7 +114,7 @@ namespace imagecreaterApi.Controllers
             p.LineJoin = LineJoin.Round; //prevent "spikes" at the path
 
             Rectangle fr = new Rectangle(0, bitmap.Height - f.Height, bitmap.Width, f.Height);
-            LinearGradientBrush b = new LinearGradientBrush(fr, ColorTranslator.FromHtml("#ffffff"), ColorTranslator.FromHtml("#ffffff"), 90);
+            LinearGradientBrush b = new LinearGradientBrush(fr, ColorTranslator.FromHtml("#ffffff"), ColorTranslator.FromHtml("#ffffff"), 180);
 
             for (int i = 0; i < memelines.Count; i++)
             {
