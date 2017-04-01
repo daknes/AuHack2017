@@ -121,7 +121,7 @@ namespace imagecreaterApi.Controllers
                 GraphicsPath gp = new GraphicsPath();
                 Rectangle r = new Rectangle(25, 50 + (20 * i), bitmap.Width, bitmap.Height);
 
-                gp.AddString(memelines[i], f.FontFamily, (int)f.Style, 15, r, stringformat);
+                gp.AddString(memelines[i], f.FontFamily, (int)f.Style, 25, r, stringformat);
 
                 graphicsImage.SmoothingMode = SmoothingMode.AntiAlias;
                 graphicsImage.PixelOffsetMode = PixelOffsetMode.HighQuality;
