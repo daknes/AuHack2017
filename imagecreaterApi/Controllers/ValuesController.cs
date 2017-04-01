@@ -101,8 +101,8 @@ namespace imagecreaterApi.Controllers
             var memelines = DefindeNoOfLines(test);
 
             System.Drawing.Image bitmap = (System.Drawing.Image)Bitmap.FromStream(stream);
-            bitmap = RotateImage(bitmap, 90);
             bitmap =  ScaleImage(bitmap, 460, 720);
+            bitmap = RotateImage(bitmap, 90);
 
             Graphics graphicsImage = Graphics.FromImage(bitmap);
             StringFormat stringformat = new StringFormat();
