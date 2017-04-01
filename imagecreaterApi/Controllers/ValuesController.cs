@@ -6,27 +6,40 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace imagecreaterApi.Controllers
 {
     public class ValuesController : ApiController
     {
         // GET api/values
-        public IEnumerable<string> Get()
+        public IEnumerable<string> Get(string i)
         {
             return new string[] { "value1", "value2" };
         }
-
-        // GET api/values/5
-        public string Get(int id)
-        {
-            
-            return null;
+        
+        public string Get()
+        {            
+            return "https://s3.eu-central-1.amazonaws.com/auhackimages/17742444_10211086890479658_1867142806.jpg";
         }
 
         // POST api/values
-        public void Post([FromBody]string value)
+        public async Task Post([FromBody]string value)
         {
+            if (!Request.Content.IsMimeMultipartContent())
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+
+            var provider = new MultipartMemoryStreamProvider();
+            await Request.Content.ReadAsMultipartAsync(provider);
+            foreach (var file in provider.Contents)
+            {
+                var filename = file.Headers.ContentDisposition.FileName.Trim('\"');
+                var buffer = await file.ReadAsByteArrayAsync();
+                .
+            }
+
         }
 
         // PUT api/values/5
@@ -77,17 +90,17 @@ namespace imagecreaterApi.Controllers
             return memlines;
         }
 
-        private void GenerateImage()
+        private void GenerateImage(byte[] image)
         {
             var firstlinememe = "When you send nudes to your online gf";
             var secoundlineMeme = "And your uncle phone rings";
             var test = firstlinememe + " " + secoundlineMeme + " " + secoundlineMeme;
 
-
+            MemoryStream ms = new MemoryStream(image);
 
             var memelines = DefindeNoOfLines(test);
 
-            System.Drawing.Image bitmap = (System.Drawing.Image)Bitmap.FromFile(@"C:\Users\1034553\Desktop\17742444_10211086890479658_1867142806_n.jpg");
+            System.Drawing.Image bitmap = (System.Drawing.Image)Bitmap.FromStream(ms);
             Graphics graphicsImage = Graphics.FromImage(bitmap);
             StringFormat stringformat = new StringFormat();
             stringformat.Alignment = StringAlignment.Near;
