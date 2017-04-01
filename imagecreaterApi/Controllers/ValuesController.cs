@@ -13,13 +13,7 @@ using System.IO;
 namespace imagecreaterApi.Controllers
 {
     public class ValuesController : ApiController
-    {
-        // GET api/values
-        public IEnumerable<string> Get(string i)
-        {
-            return new string[] { "value1", "value2" };
-        }
-        
+    {        
         public string Get()
         {            
             return "https://s3.eu-central-1.amazonaws.com/auhackimages/17742444_10211086890479658_1867142806.jpg";
@@ -36,8 +30,7 @@ namespace imagecreaterApi.Controllers
             foreach (var file in provider.Contents)
             {
                 var filename = file.Headers.ContentDisposition.FileName.Trim('\"');
-                var buffer = await file.ReadAsByteArrayAsync();
-                .
+                var buffer = await file.ReadAsByteArrayAsync();                
             }
 
         }
