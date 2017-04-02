@@ -44,6 +44,7 @@ namespace imagecreaterApi.Controllers
             var provider = new MultipartMemoryStreamProvider();
             await Request.Content.ReadAsMultipartAsync(provider);
             Dictionary<string, float> emo = null;
+            Dictionary<string, float> labels = null;
             foreach (var file in provider.Contents)
             {
                 var filename = Guid.NewGuid().ToString() + ".png";
@@ -51,15 +52,35 @@ namespace imagecreaterApi.Controllers
 
                 var mem = new MemoryStream(await file.ReadAsByteArrayAsync());
                 emo = getemotion(mem);
-                //var labels = GetLabels(mem);
 
-                string memetext = GetMemeText(emo);
+
+                string memetext;
+                if (emo.Any())
+                {
+                    memetext = GetMemeText(emo);
+                }
+                else
+                {
+                    labels = GetLabels(mem);
+                    if (labels.Any())
+                    {
+                        memetext = GetMemeTextByLabel(labels);
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+                }
 
                 var newstream = GenerateImage(stream, memetext);
                 url = saveToSThree(newstream, filename);
             }
-            return Ok(new { URL = url, Emotion =  emo.OrderByDescending(x => x.Value).FirstOrDefault().Key});
-
+            return Ok(new
+            {
+                URL = url,
+                Emotion = emo.OrderByDescending(x => x.Value).FirstOrDefault().Key ?? "",
+                Tag = labels.OrderByDescending(x => x.Value).FirstOrDefault().Key ?? ""
+            });
         }
 
         private List<string> DefindeNoOfLines(string meme, int Maxlength)
@@ -155,7 +176,7 @@ namespace imagecreaterApi.Controllers
             System.Drawing.Image bitmap = (System.Drawing.Image)Bitmap.FromStream(stream);
 
             var memelines = DefindeNoOfLines(text, bitmap.Width - 20);
-            var fontSize = (bitmap.Height /100)*5;
+            var fontSize = (bitmap.Height / 100) * 5;
             Graphics graphicsImage = Graphics.FromImage(bitmap);
             StringFormat stringformat = new StringFormat();
             stringformat.Alignment = StringAlignment.Center;
@@ -171,7 +192,7 @@ namespace imagecreaterApi.Controllers
             for (int i = 0; i < memelines.Count; i++)
             {
                 GraphicsPath gp = new GraphicsPath();
-                Rectangle r = new Rectangle(0, 0 + ((fontSize +3) * i), bitmap.Width, bitmap.Height);
+                Rectangle r = new Rectangle(0, 0 + ((fontSize + 3) * i), bitmap.Width, bitmap.Height);
 
                 gp.AddString(memelines[i], f.FontFamily, (int)f.Style, fontSize, r, stringformat);
 
@@ -209,14 +230,52 @@ namespace imagecreaterApi.Controllers
             while (!done)
             {
                 var theFinalOne = result.OrderBy(x => new Random().Next()).FirstOrDefault();
-                string theBestSqlEver = $"select * from memes where id = {theFinalOne.MemeID} and LEN(MemeText) >= 80";            
+                string theBestSqlEver = $"select * from memes where id = {theFinalOne.MemeID} and LEN(MemeText) >= 80";
                 theMEME = _connection.QueryFirstOrDefault<dynamic>(theBestSqlEver);
                 done = theMEME != null;
             }
             var awesomeText = (string)theMEME.MemeText;
 
             var superAweSomeText = awesomeText.Replace("\r\n", " ");
-            return superAweSomeText.Replace("imgflip.com","").ToUpper();
+            return superAweSomeText.Replace("imgflip.com", "").ToUpper();
+
+        }
+
+        private string GetMemeTextByLabel(Dictionary<string, float> labels)
+        {
+            dynamic theMEME = null;
+            bool done = false;
+            int i = -1;
+            while (!done)
+            {
+                i++;
+                KeyValuePair<string, float> strongest = labels.OrderByDescending(x => x.Value).ElementAt(i);
+                string sql = $@"select  * from tags
+                                        where Name = '{strongest.Key}' 
+                                        order by ABS(Rating - {strongest.Value})";
+
+                var result = _connection.Query<dynamic>(sql);
+
+                if (result == null || result.Count() == 0)
+                {
+                    continue;
+                }
+
+                bool doneFindingMeme = false;
+                while (doneFindingMeme)
+                {
+                    var theFinalOne = result.FirstOrDefault();
+
+                    string theBestSqlEver = $"select * from memes where id = {theFinalOne.MemeID} and LEN(MemeText) >= 80";
+                    theMEME = _connection.QueryFirstOrDefault<dynamic>(theBestSqlEver);
+
+                }
+                done = doneFindingMeme = theMEME != null;
+            }
+            var awesomeText = (string)theMEME.MemeText;
+
+            var superAweSomeText = awesomeText.Replace("\r\n", " ");
+            return superAweSomeText.Replace("imgflip.com", "").ToUpper();
 
         }
 

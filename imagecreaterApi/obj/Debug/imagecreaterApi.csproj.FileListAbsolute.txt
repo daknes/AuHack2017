@@ -75,7 +75,6 @@ C:\Private_Projects\AUHack\AuHack2017\imagecreaterApi\bin\Antlr3.Runtime.dll
 C:\Private_Projects\AUHack\AuHack2017\imagecreaterApi\bin\AWSSDK.Core.dll
 C:\Private_Projects\AUHack\AuHack2017\imagecreaterApi\bin\AWSSDK.Rekognition.dll
 C:\Private_Projects\AUHack\AuHack2017\imagecreaterApi\bin\AWSSDK.S3.dll
-C:\Private_Projects\AUHack\AuHack2017\imagecreaterApi\bin\Dapper.dll
 C:\Private_Projects\AUHack\AuHack2017\imagecreaterApi\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
 C:\Private_Projects\AUHack\AuHack2017\imagecreaterApi\bin\Microsoft.Web.Infrastructure.dll
 C:\Private_Projects\AUHack\AuHack2017\imagecreaterApi\bin\Newtonsoft.Json.dll
