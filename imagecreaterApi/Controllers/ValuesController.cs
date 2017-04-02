@@ -62,7 +62,7 @@ namespace imagecreaterApi.Controllers
         private List<string> DefindeNoOfLines(string meme)
         {
             List<string> memlines = new List<string>();
-            var Maxlength = 37;
+            var Maxlength = 28;
             if (meme.Length < Maxlength)
             {
                 memlines.Add(meme);
@@ -74,7 +74,7 @@ namespace imagecreaterApi.Controllers
                 foreach (var item in list)
                 {
 
-                    if ((line.Length + item.Length + 1) < 37)
+                    if ((line.Length + item.Length + 1) < Maxlength)
                     {
                         line += " " + item;
                     }
