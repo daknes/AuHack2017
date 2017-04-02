@@ -54,6 +54,7 @@ namespace imagecreaterApi.Controllers
                 //var labels = GetLabels(mem);
 
                 string memetext = GetMemeText(emo);
+
                 var newstream = GenerateImage(stream, memetext);
                 url = saveToSThree(newstream, filename);
             }
@@ -151,15 +152,13 @@ namespace imagecreaterApi.Controllers
 
         private Stream GenerateImage(Stream stream, string text)
         {
-
-
             System.Drawing.Image bitmap = (System.Drawing.Image)Bitmap.FromStream(stream);
 
             var memelines = DefindeNoOfLines(text, bitmap.Width - 20);
             var fontSize = (bitmap.Height /100)*5;
             Graphics graphicsImage = Graphics.FromImage(bitmap);
             StringFormat stringformat = new StringFormat();
-            stringformat.Alignment = StringAlignment.Near;
+            stringformat.Alignment = StringAlignment.Center;
             stringformat.LineAlignment = StringAlignment.Near;
             Color StringColor = System.Drawing.ColorTranslator.FromHtml("#ffffff");
             Font f = new Font("Impact", fontSize, FontStyle.Bold, GraphicsUnit.Pixel);
@@ -210,68 +209,21 @@ namespace imagecreaterApi.Controllers
             while (!done)
             {
                 var theFinalOne = result.OrderBy(x => new Random().Next()).FirstOrDefault();
-                string theBestSqlEver = $"select * from memes where id = {theFinalOne.MemeID} and LEN(MemeText) >= 80";
+                //string theBestSqlEver = $"select * from memes where id = {theFinalOne.MemeID} and LEN(MemeText) >= 80";
+                string theBestSqlEver = $"select * from memes where id = {1918} and LEN(MemeText) >= 80";
                 theMEME = _connection.QueryFirstOrDefault<dynamic>(theBestSqlEver);
                 done = theMEME != null;
             }
             var awesomeText = (string)theMEME.MemeText;
-            var superAweSomeText = awesomeText.Replace(@"\r\n", " ");
+
+            var superAweSomeText = awesomeText.Replace("\r\n", " ");
             return superAweSomeText.Replace("imgflip.com","").ToUpper();
 
         }
 
-        private static System.Drawing.Image ScaleImage(System.Drawing.Image image, int maxWidth, int maxHeight)
-        {
-            var ratioX = (double)maxWidth / image.Width;
-            var ratioY = (double)maxHeight / image.Height;
-            var ratio = Math.Min(ratioX, ratioY);
-
-            var newWidth = (int)(image.Width * ratio);
-            var newHeight = (int)(image.Height * ratio);
-
-            var newImage = new Bitmap(newWidth, newHeight);
-
-            using (var graphics = Graphics.FromImage(newImage))
-                graphics.DrawImage(image, 0, 0, newWidth, newHeight);
-
-            return newImage;
-        }
-
-
-        public static System.Drawing.Image RotateImage(System.Drawing.Image img, float rotationAngle)
-        {
-            //create an empty Bitmap image
-            Bitmap bmp = new Bitmap(img.Width, img.Height);
-
-            //turn the Bitmap into a Graphics object
-            Graphics gfx = Graphics.FromImage(bmp);
-
-            //now we set the rotation point to the center of our image
-            gfx.TranslateTransform((float)bmp.Width / 2, (float)bmp.Height / 2);
-
-            //now rotate the image
-            gfx.RotateTransform(rotationAngle);
-
-            gfx.TranslateTransform(-(float)bmp.Width / 2, -(float)bmp.Height / 2);
-
-            //set the InterpolationMode to HighQualityBicubic so to ensure a high
-            //quality image once it is transformed to the specified size
-            gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
-
-            //now draw our new image onto the graphics object
-            gfx.DrawImage(img, new Point(0, 0));
-
-            //dispose of our Graphics object
-            gfx.Dispose();
-
-            //return the image
-            return bmp;
-        }
 
         private string saveToSThree(Stream image, string imageName)
         {
-            //TransferUtility utility = new TransferUtility("", "");
-
             IAmazonS3 client;
             client = new AmazonS3Client(Amazon.RegionEndpoint.EUCentral1);
             PutObjectRequest request = new PutObjectRequest()
