@@ -156,13 +156,13 @@ namespace imagecreaterApi.Controllers
             System.Drawing.Image bitmap = (System.Drawing.Image)Bitmap.FromStream(stream);
 
             var memelines = DefindeNoOfLines(text, bitmap.Width - 20);
-
+            var fontSize = (bitmap.Height /100)*10;
             Graphics graphicsImage = Graphics.FromImage(bitmap);
             StringFormat stringformat = new StringFormat();
             stringformat.Alignment = StringAlignment.Near;
             stringformat.LineAlignment = StringAlignment.Near;
             Color StringColor = System.Drawing.ColorTranslator.FromHtml("#ffffff");
-            Font f = new Font("Impact", 70, FontStyle.Bold, GraphicsUnit.Pixel);
+            Font f = new Font("Impact", fontSize, FontStyle.Bold, GraphicsUnit.Pixel);
             Pen p = new Pen(ColorTranslator.FromHtml("#000000"), 8);
             p.LineJoin = LineJoin.Round; //prevent "spikes" at the path
 
@@ -172,9 +172,9 @@ namespace imagecreaterApi.Controllers
             for (int i = 0; i < memelines.Count; i++)
             {
                 GraphicsPath gp = new GraphicsPath();
-                Rectangle r = new Rectangle(0, 0 + (73 * i), bitmap.Width, bitmap.Height);
+                Rectangle r = new Rectangle(0, 0 + ((fontSize +3) * i), bitmap.Width, bitmap.Height);
 
-                gp.AddString(memelines[i], f.FontFamily, (int)f.Style, 70, r, stringformat);
+                gp.AddString(memelines[i], f.FontFamily, (int)f.Style, fontSize, r, stringformat);
 
                 graphicsImage.SmoothingMode = SmoothingMode.AntiAlias;
                 graphicsImage.PixelOffsetMode = PixelOffsetMode.HighQuality;
