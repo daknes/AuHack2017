@@ -209,8 +209,7 @@ namespace imagecreaterApi.Controllers
             while (!done)
             {
                 var theFinalOne = result.OrderBy(x => new Random().Next()).FirstOrDefault();
-                //string theBestSqlEver = $"select * from memes where id = {theFinalOne.MemeID} and LEN(MemeText) >= 80";
-                string theBestSqlEver = $"select * from memes where id = {1918} and LEN(MemeText) >= 80";
+                string theBestSqlEver = $"select * from memes where id = {theFinalOne.MemeID} and LEN(MemeText) >= 80";            
                 theMEME = _connection.QueryFirstOrDefault<dynamic>(theBestSqlEver);
                 done = theMEME != null;
             }
