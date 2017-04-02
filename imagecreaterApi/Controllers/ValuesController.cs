@@ -35,7 +35,7 @@ namespace imagecreaterApi.Controllers
             _connection.Open();
         }
         // POST api/values
-        public async Task<string> Post()
+        public async Task<IHttpActionResult> Post()
         {
 
             if (!Request.Content.IsMimeMultipartContent())
@@ -43,20 +43,21 @@ namespace imagecreaterApi.Controllers
             var url = "";
             var provider = new MultipartMemoryStreamProvider();
             await Request.Content.ReadAsMultipartAsync(provider);
+            Dictionary<string, float> emo = null;
             foreach (var file in provider.Contents)
             {
                 var filename = Guid.NewGuid().ToString() + ".png";
                 var stream = await file.ReadAsStreamAsync();
 
                 var mem = new MemoryStream(await file.ReadAsByteArrayAsync());
-                var emo = getemotion(mem);
+                emo = getemotion(mem);
                 //var labels = GetLabels(mem);
 
                 string memetext = GetMemeText(emo);
                 var newstream = GenerateImage(stream, memetext);
                 url = saveToSThree(newstream, filename);
             }
-            return url;
+            return Ok(new { URL = url, Emotion =  emo.OrderByDescending(x => x.Value).FirstOrDefault().Value});
 
         }
 
@@ -119,7 +120,10 @@ namespace imagecreaterApi.Controllers
             {
                 foreach (var item in detail.Emotions)
                 {
-                    emos.Add(item.Type, item.Confidence);
+                    if (!emos.ContainsKey(item.Type))
+                    {
+                        emos.Add(item.Type, item.Confidence);
+                    }
                 }
             }
             return emos;
@@ -199,16 +203,23 @@ namespace imagecreaterApi.Controllers
         {
             KeyValuePair<string, float> strongest = emotions.OrderByDescending(x => x.Value).FirstOrDefault();
             string sql = $@"select  * from emotions
-                                        where Name = '{strongest.Key}'
+                                        where Name = '{strongest.Key}' 
                                         order by ABS(Rating - {strongest.Value})";
 
             var result = _connection.Query<dynamic>(sql);
-            var theFinalOne = result.OrderBy(x => new Random().Next()).FirstOrDefault();
 
-            string theBestSqlEver = $"select * from memes where id = {theFinalOne.MemeID}";
-            var theMEME = _connection.QueryFirstOrDefault<dynamic>(theBestSqlEver);
-            return theMEME.MemeText;
-            
+            dynamic theMEME = null;
+            bool done = false;
+            while (!done)
+            {
+                var theFinalOne = result.OrderBy(x => new Random().Next()).FirstOrDefault();
+                string theBestSqlEver = $"select * from memes where id = {theFinalOne.MemeID} and LEN(MemeText) >= 80";
+                theMEME = _connection.QueryFirstOrDefault<dynamic>(theBestSqlEver);
+                done = theMEME != null;
+            }
+            var awesomeText = (string)theMEME.MemeText;
+            return awesomeText.Replace(@"\r\n", " ");
+
         }
 
         private static System.Drawing.Image ScaleImage(System.Drawing.Image image, int maxWidth, int maxHeight)
