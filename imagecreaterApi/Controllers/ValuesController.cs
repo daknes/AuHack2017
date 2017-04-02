@@ -57,7 +57,7 @@ namespace imagecreaterApi.Controllers
                 var newstream = GenerateImage(stream, memetext);
                 url = saveToSThree(newstream, filename);
             }
-            return Ok(new { URL = url, Emotion =  emo.OrderByDescending(x => x.Value).FirstOrDefault().Value});
+            return Ok(new { URL = url, Emotion =  emo.OrderByDescending(x => x.Value).FirstOrDefault().Key});
 
         }
 
