@@ -109,5 +109,4 @@ C:\Private_Projects\AUHack\AuHack2017\imagecreaterApi\bin\System.Web.WebPages.xm
 C:\Private_Projects\AUHack\AuHack2017\imagecreaterApi\bin\System.Web.WebPages.Deployment.xml
 C:\Private_Projects\AUHack\AuHack2017\imagecreaterApi\bin\System.Web.WebPages.Razor.xml
 C:\Private_Projects\AUHack\AuHack2017\imagecreaterApi\bin\Antlr3.Runtime.pdb
-C:\Users\1034553\Desktop\auhack\imgaerender\imagecreaterApi\bin\Dapper.dll
 C:\Users\1034553\Desktop\auhack\imgaerender\imagecreaterApi\bin\Dapper.xml

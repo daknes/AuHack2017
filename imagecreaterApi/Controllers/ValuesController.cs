@@ -78,8 +78,8 @@ namespace imagecreaterApi.Controllers
             return Ok(new
             {
                 URL = url,
-                Emotion = emo.OrderByDescending(x => x.Value).FirstOrDefault().Key ?? "",
-                Tag = labels.OrderByDescending(x => x.Value).FirstOrDefault().Key ?? ""
+                Emotion = emo?.OrderByDescending(x => x.Value).FirstOrDefault().Key ?? "",
+                Tag = labels?.OrderByDescending(x => x.Value).FirstOrDefault().Key ?? ""
             });
         }
 
