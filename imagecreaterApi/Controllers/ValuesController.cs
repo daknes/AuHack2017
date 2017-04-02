@@ -14,6 +14,8 @@ using Amazon;
 using Amazon.S3.Transfer;
 using System.Drawing.Imaging;
 using Amazon.S3.Model;
+using Amazon.Rekognition;
+using Amazon.Rekognition.Model;
 
 namespace imagecreaterApi.Controllers
 {
@@ -37,6 +39,9 @@ namespace imagecreaterApi.Controllers
             {
                 var filename = Guid.NewGuid().ToString() +".png";
                 var stream = await file.ReadAsStreamAsync();
+                var mem = new MemoryStream(await file.ReadAsByteArrayAsync());
+                var emo = getemotion(mem);
+
                 var newstream = GenerateImage(stream);
                 url = saveToSThree(newstream, filename);
             }
@@ -92,6 +97,34 @@ namespace imagecreaterApi.Controllers
             return memlines;
         }
 
+
+
+        private Dictionary<string, float> getemotion(MemoryStream image)
+        {
+            Dictionary<string, float> emos = new Dictionary<string, float>(); 
+            IAmazonRekognition reg = new AmazonRekognitionClient();
+
+            var request = new DetectFacesRequest()
+            {
+                Image = new Amazon.Rekognition.Model.Image { Bytes = image },
+                Attributes = new List<string>
+                {
+                    "ALL"
+                }
+            };
+
+            var resp = reg.DetectFaces(request);
+            foreach (var detail in resp.FaceDetails)
+            {
+                foreach (var item in detail.Emotions)
+                {
+                    emos.Add(item.Type, item.Confidence);
+                }
+            }
+
+            return emos;
+        }
+
         private Stream GenerateImage(Stream stream)
         {
             var firstlinememe = "When you send nudes to your online gf";
@@ -109,7 +142,7 @@ namespace imagecreaterApi.Controllers
             stringformat.Alignment = StringAlignment.Near;
             stringformat.LineAlignment = StringAlignment.Near;
             Color StringColor = System.Drawing.ColorTranslator.FromHtml("#ffffff");
-            Font f = new Font("Impact", 20, FontStyle.Bold, GraphicsUnit.Pixel);
+            Font f = new Font("Impact", 140, FontStyle.Bold, GraphicsUnit.Pixel);
             Pen p = new Pen(ColorTranslator.FromHtml("#000000"), 8);
             p.LineJoin = LineJoin.Round; //prevent "spikes" at the path
 
@@ -119,10 +152,10 @@ namespace imagecreaterApi.Controllers
             for (int i = 0; i < memelines.Count; i++)
             {
                 GraphicsPath gp = new GraphicsPath();
-                Rectangle r = new Rectangle(15, 10 + (23 * i), bitmap.Width, bitmap.Height);
+                Rectangle r = new Rectangle(15, 10 + (143 * i), bitmap.Width, bitmap.Height);
                 //Rectangle r = new Rectangle(0, (43 * i), bitmap.Width, bitmap.Height);
 
-                gp.AddString(memelines[i], f.FontFamily, (int)f.Style, 20, r, stringformat);
+                gp.AddString(memelines[i], f.FontFamily, (int)f.Style, 140, r, stringformat);
 
                 graphicsImage.SmoothingMode = SmoothingMode.AntiAlias;
                 graphicsImage.PixelOffsetMode = PixelOffsetMode.HighQuality;
@@ -145,7 +178,7 @@ namespace imagecreaterApi.Controllers
         }
 
 
-        private static Image ScaleImage(Image image, int maxWidth, int maxHeight)
+        private static System.Drawing.Image ScaleImage(System.Drawing.Image image, int maxWidth, int maxHeight)
         {
             var ratioX = (double)maxWidth / image.Width;
             var ratioY = (double)maxHeight / image.Height;
@@ -163,7 +196,7 @@ namespace imagecreaterApi.Controllers
         }
 
 
-        public static Image RotateImage(Image img, float rotationAngle)
+        public static System.Drawing.Image RotateImage(System.Drawing.Image img, float rotationAngle)
         {
             //create an empty Bitmap image
             Bitmap bmp = new Bitmap(img.Width, img.Height);

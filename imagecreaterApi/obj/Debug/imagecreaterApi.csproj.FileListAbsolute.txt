@@ -50,3 +50,6 @@ C:\Users\1034553\Desktop\auhack\imgaerender\imagecreaterApi\bin\Antlr3.Runtime.p
 C:\Users\1034553\Desktop\auhack\imgaerender\imagecreaterApi\obj\Debug\imagecreaterApi.csprojResolveAssemblyReference.cache
 C:\Users\1034553\Desktop\auhack\imgaerender\imagecreaterApi\obj\Debug\imagecreaterApi.dll
 C:\Users\1034553\Desktop\auhack\imgaerender\imagecreaterApi\obj\Debug\imagecreaterApi.pdb
+C:\Users\1034553\Desktop\auhack\imgaerender\imagecreaterApi\bin\AWSSDK.Rekognition.dll
+C:\Users\1034553\Desktop\auhack\imgaerender\imagecreaterApi\bin\AWSSDK.Rekognition.pdb
+C:\Users\1034553\Desktop\auhack\imgaerender\imagecreaterApi\bin\AWSSDK.Rekognition.xml
