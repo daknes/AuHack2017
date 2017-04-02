@@ -156,7 +156,7 @@ namespace imagecreaterApi.Controllers
             System.Drawing.Image bitmap = (System.Drawing.Image)Bitmap.FromStream(stream);
 
             var memelines = DefindeNoOfLines(text, bitmap.Width - 20);
-            var fontSize = (bitmap.Height /100)*10;
+            var fontSize = (bitmap.Height /100)*5;
             Graphics graphicsImage = Graphics.FromImage(bitmap);
             StringFormat stringformat = new StringFormat();
             stringformat.Alignment = StringAlignment.Near;
