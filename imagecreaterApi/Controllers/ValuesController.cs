@@ -75,6 +75,8 @@ namespace imagecreaterApi.Controllers
                 var newstream = GenerateImage(stream, memetext);
                 url = saveToSThree(newstream, filename);
             }
+            var q = emo?.OrderByDescending(x => x.Value).FirstOrDefault().Key ?? "";
+            var o = labels?.OrderByDescending(x => x.Value).FirstOrDefault().Key ?? "";
             return Ok(new
             {
                 URL = url,
@@ -262,15 +264,15 @@ namespace imagecreaterApi.Controllers
                 }
 
                 bool doneFindingMeme = false;
-                while (doneFindingMeme)
+                while (!doneFindingMeme)
                 {
                     var theFinalOne = result.FirstOrDefault();
 
                     string theBestSqlEver = $"select * from memes where id = {theFinalOne.MemeID} and LEN(MemeText) >= 80";
                     theMEME = _connection.QueryFirstOrDefault<dynamic>(theBestSqlEver);
 
+                    done = doneFindingMeme = theMEME != null;
                 }
-                done = doneFindingMeme = theMEME != null;
             }
             var awesomeText = (string)theMEME.MemeText;
 
