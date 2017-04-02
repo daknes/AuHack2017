@@ -40,7 +40,7 @@ namespace imagecreaterApi.Controllers
                 var filename = Guid.NewGuid().ToString() +".png";
                 var stream = await file.ReadAsStreamAsync();
                 var mem = new MemoryStream(await file.ReadAsByteArrayAsync());
-                var emo = getemotion(mem);
+                //var emo = getemotion(mem);
 
                 var newstream = GenerateImage(stream);
                 url = saveToSThree(newstream, filename);
