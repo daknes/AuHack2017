@@ -61,10 +61,9 @@ namespace imagecreaterApi.Controllers
 
         }
 
-        private List<string> DefindeNoOfLines(string meme)
+        private List<string> DefindeNoOfLines(string meme, int Maxlength)
         {
             List<string> memlines = new List<string>();
-            var Maxlength = 28;
             if (meme.Length < Maxlength)
             {
                 memlines.Add(meme);
@@ -153,11 +152,10 @@ namespace imagecreaterApi.Controllers
         private Stream GenerateImage(Stream stream, string text)
         {
 
-            var memelines = DefindeNoOfLines(text);
 
             System.Drawing.Image bitmap = (System.Drawing.Image)Bitmap.FromStream(stream);
-            // bitmap =  ScaleImage(bitmap, 360, 640);
-            // bitmap = RotateImage(bitmap, 90);
+
+            var memelines = DefindeNoOfLines(text, bitmap.Width - 20);
 
             Graphics graphicsImage = Graphics.FromImage(bitmap);
             StringFormat stringformat = new StringFormat();
