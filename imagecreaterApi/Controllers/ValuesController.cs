@@ -162,7 +162,7 @@ namespace imagecreaterApi.Controllers
             stringformat.Alignment = StringAlignment.Near;
             stringformat.LineAlignment = StringAlignment.Near;
             Color StringColor = System.Drawing.ColorTranslator.FromHtml("#ffffff");
-            Font f = new Font("Impact", 50, FontStyle.Bold, GraphicsUnit.Pixel);
+            Font f = new Font("Impact", 70, FontStyle.Bold, GraphicsUnit.Pixel);
             Pen p = new Pen(ColorTranslator.FromHtml("#000000"), 8);
             p.LineJoin = LineJoin.Round; //prevent "spikes" at the path
 
@@ -172,9 +172,9 @@ namespace imagecreaterApi.Controllers
             for (int i = 0; i < memelines.Count; i++)
             {
                 GraphicsPath gp = new GraphicsPath();
-                Rectangle r = new Rectangle(0, 0 + (53 * i), bitmap.Width, bitmap.Height);
+                Rectangle r = new Rectangle(0, 0 + (73 * i), bitmap.Width, bitmap.Height);
 
-                gp.AddString(memelines[i], f.FontFamily, (int)f.Style, 50, r, stringformat);
+                gp.AddString(memelines[i], f.FontFamily, (int)f.Style, 70, r, stringformat);
 
                 graphicsImage.SmoothingMode = SmoothingMode.AntiAlias;
                 graphicsImage.PixelOffsetMode = PixelOffsetMode.HighQuality;
@@ -215,7 +215,8 @@ namespace imagecreaterApi.Controllers
                 done = theMEME != null;
             }
             var awesomeText = (string)theMEME.MemeText;
-            return awesomeText.Replace(@"\r\n", " ");
+            var superAweSomeText = awesomeText.Replace(@"\r\n", " ");
+            return superAweSomeText.Replace("imgflip.com","");
 
         }
 
