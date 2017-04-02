@@ -17,11 +17,20 @@ using Amazon.S3.Model;
 using Amazon.Rekognition;
 using Amazon.Rekognition.Model;
 using System.Configuration;
+using System.Data.SqlClient;
+using Dapper;
 
 namespace imagecreaterApi.Controllers
 {
     public class ValuesController : ApiController
     {
+        private SqlConnection _connection;
+
+        public ValuesController()
+        {
+            _connection = new SqlConnection("Server=auhack2017.c2hsrbdochzn.eu-central-1.rds.amazonaws.com;Database=#MEMEMAGIC;User Id=admin;Password = auhack2017;");
+            _connection.Open();
+        }
         // POST api/values
         public async Task<string> Post()
         {
@@ -33,14 +42,15 @@ namespace imagecreaterApi.Controllers
             await Request.Content.ReadAsMultipartAsync(provider);
             foreach (var file in provider.Contents)
             {
-                var filename = Guid.NewGuid().ToString() +".png";
+                var filename = Guid.NewGuid().ToString() + ".png";
                 var stream = await file.ReadAsStreamAsync();
 
                 var mem = new MemoryStream(await file.ReadAsByteArrayAsync());
                 var emo = getemotion(mem);
-                var labels = GetLabels(mem);
+                //var labels = GetLabels(mem);
 
-                var newstream = GenerateImage(stream);
+                string memetext = GetMemeText(emo);
+                var newstream = GenerateImage(stream, memetext);
                 url = saveToSThree(newstream, filename);
             }
             return url;
@@ -86,11 +96,10 @@ namespace imagecreaterApi.Controllers
         }
 
 
-
         private Dictionary<string, float> getemotion(MemoryStream image)
         {
+
             Dictionary<string, float> emos = new Dictionary<string, float>();
-           
             IAmazonRekognition reg = new AmazonRekognitionClient(ConfigurationManager.AppSettings["AWSAccessKey"], ConfigurationManager.AppSettings["AWSSecretKey"], RegionEndpoint.EUWest1);
 
             var request = new DetectFacesRequest()
@@ -134,17 +143,14 @@ namespace imagecreaterApi.Controllers
         }
 
 
-        private Stream GenerateImage(Stream stream)
+        private Stream GenerateImage(Stream stream, string text)
         {
-            var firstlinememe = "When you send nudes to your online gf";
-            var secoundlineMeme = "And your uncle phone rings";
-            var test = firstlinememe + " " + secoundlineMeme + " " + secoundlineMeme;
 
-            var memelines = DefindeNoOfLines(test);
+            var memelines = DefindeNoOfLines(text);
 
             System.Drawing.Image bitmap = (System.Drawing.Image)Bitmap.FromStream(stream);
-           // bitmap =  ScaleImage(bitmap, 360, 640);
-           // bitmap = RotateImage(bitmap, 90);
+            // bitmap =  ScaleImage(bitmap, 360, 640);
+            // bitmap = RotateImage(bitmap, 90);
 
             Graphics graphicsImage = Graphics.FromImage(bitmap);
             StringFormat stringformat = new StringFormat();
@@ -186,6 +192,21 @@ namespace imagecreaterApi.Controllers
             return ms;
         }
 
+        private string GetMemeText(Dictionary<string, float> emotions)
+        {
+            KeyValuePair<string, float> strongest = emotions.OrderByDescending(x => x.Value).FirstOrDefault();
+            string sql = $@"select  * from emotions
+                                        where Name = '{strongest.Key}'
+                                        order by ABS(Rating - {strongest.Value})";
+
+            var result = _connection.Query<dynamic>(sql);
+            var theFinalOne = result.OrderBy(x => new Random().Next()).FirstOrDefault();
+
+            string theBestSqlEver = $"select * from memes where id = {theFinalOne.MemeID}";
+            var theMEME = _connection.QueryFirstOrDefault<dynamic>(theBestSqlEver);
+            return theMEME.MemeText;
+            
+        }
 
         private static System.Drawing.Image ScaleImage(System.Drawing.Image image, int maxWidth, int maxHeight)
         {
@@ -250,6 +271,12 @@ namespace imagecreaterApi.Controllers
             };
             PutObjectResponse response2 = client.PutObject(request);
             return "https://s3.eu-central-1.amazonaws.com/auhackimages/" + imageName;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _connection.Dispose();
+            base.Dispose(disposing);
         }
 
     }
