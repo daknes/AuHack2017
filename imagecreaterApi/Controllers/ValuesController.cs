@@ -216,7 +216,7 @@ namespace imagecreaterApi.Controllers
             }
             var awesomeText = (string)theMEME.MemeText;
             var superAweSomeText = awesomeText.Replace(@"\r\n", " ");
-            return superAweSomeText.Replace("imgflip.com","");
+            return superAweSomeText.Replace("imgflip.com","").ToUpper();
 
         }
 
