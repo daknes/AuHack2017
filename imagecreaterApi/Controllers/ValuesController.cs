@@ -16,16 +16,12 @@ using System.Drawing.Imaging;
 using Amazon.S3.Model;
 using Amazon.Rekognition;
 using Amazon.Rekognition.Model;
+using System.Configuration;
 
 namespace imagecreaterApi.Controllers
 {
     public class ValuesController : ApiController
     {
-        public string Get()
-        {
-            return "https://s3.eu-central-1.amazonaws.com/auhackimages/17742444_10211086890479658_1867142806.jpg";
-        }
-
         // POST api/values
         public async Task<string> Post()
         {
@@ -40,23 +36,14 @@ namespace imagecreaterApi.Controllers
                 var filename = Guid.NewGuid().ToString() +".png";
                 var stream = await file.ReadAsStreamAsync();
                 var mem = new MemoryStream(await file.ReadAsByteArrayAsync());
-                //var emo = getemotion(mem);
+                var emo = getemotion(mem);
+                var labels = GetLabels(mem);
 
                 var newstream = GenerateImage(stream);
                 url = saveToSThree(newstream, filename);
             }
             return url;
 
-        }
-
-        // PUT api/values/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/values/5
-        public void Delete(int id)
-        {
         }
 
         private List<string> DefindeNoOfLines(string meme)
@@ -101,8 +88,9 @@ namespace imagecreaterApi.Controllers
 
         private Dictionary<string, float> getemotion(MemoryStream image)
         {
-            Dictionary<string, float> emos = new Dictionary<string, float>(); 
-            IAmazonRekognition reg = new AmazonRekognitionClient();
+            Dictionary<string, float> emos = new Dictionary<string, float>();
+           
+            IAmazonRekognition reg = new AmazonRekognitionClient(ConfigurationManager.AppSettings["AWSAccessKey"], ConfigurationManager.AppSettings["AWSSecretKey"], RegionEndpoint.EUWest1);
 
             var request = new DetectFacesRequest()
             {
@@ -113,17 +101,37 @@ namespace imagecreaterApi.Controllers
                 }
             };
 
-            var resp = reg.DetectFaces(request);
-            foreach (var detail in resp.FaceDetails)
+            var respFace = reg.DetectFaces(request);
+            foreach (var detail in respFace.FaceDetails)
             {
                 foreach (var item in detail.Emotions)
                 {
                     emos.Add(item.Type, item.Confidence);
                 }
             }
-
             return emos;
         }
+
+        private Dictionary<string, float> GetLabels(MemoryStream image)
+        {
+            Dictionary<string, float> labels = new Dictionary<string, float>();
+
+            IAmazonRekognition reg = new AmazonRekognitionClient(ConfigurationManager.AppSettings["AWSAccessKey"], ConfigurationManager.AppSettings["AWSSecretKey"], RegionEndpoint.EUWest1);
+            var lbreq = new DetectLabelsRequest()
+            {
+                Image = new Amazon.Rekognition.Model.Image { Bytes = image },
+                MaxLabels = 100,
+                MinConfidence = 0
+            };
+
+            var tagRepo = reg.DetectLabels(lbreq);
+            foreach (var item in tagRepo.Labels)
+            {
+                labels.Add(item.Name, item.Confidence);
+            }
+            return labels;
+        }
+
 
         private Stream GenerateImage(Stream stream)
         {
