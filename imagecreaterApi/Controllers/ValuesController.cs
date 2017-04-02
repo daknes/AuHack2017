@@ -19,6 +19,7 @@ using Amazon.Rekognition.Model;
 using System.Configuration;
 using System.Data.SqlClient;
 using Dapper;
+using System.Threading;
 
 namespace imagecreaterApi.Controllers
 {
@@ -28,6 +29,8 @@ namespace imagecreaterApi.Controllers
 
         public ValuesController()
         {
+            Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-us");
+            Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-us");
             _connection = new SqlConnection("Server=auhack2017.c2hsrbdochzn.eu-central-1.rds.amazonaws.com;Database=#MEMEMAGIC;User Id=admin;Password = auhack2017;");
             _connection.Open();
         }
